@@ -14,31 +14,31 @@ final class GeometryTest extends AbstractTestCase
     public function testSortByMin(): void
     {
         $point_m10     = new Point(-10);
-        $point_0       = new Point(0);
-        $point_1       = new Point(1);
+        $p0       = new Point(0);
+        $p1       = new Point(1);
         $point_5       = new Point(5);
         $point_7       = new Point(7);
-        $segment_1_7   = new Segment($point_1, $point_7);
-        $segment_0_m10 = new Segment($point_0, $point_m10);
-        $segment_m10_0 = new Segment($point_m10, $point_0);
-        $vector_0_p    = new Vector($point_0, true);
+        $segment_1_7   = new Segment($p1, $point_7);
+        $segment_0_m10 = new Segment($p0, $point_m10);
+        $segment_m10_0 = new Segment($point_m10, $p0);
+        $vector_0_p    = new Vector($p0, true);
         $vector_7_p    = new Vector($point_7, true);
-        $vector_0_n    = new Vector($point_0, false);
+        $vector_0_n    = new Vector($p0, false);
 
         // points
 
         $this->assertEquals(
             [
                 $point_m10,
-                $point_0,
-                $point_1,
+                $p0,
+                $p1,
                 $point_5,
                 $point_7,
             ],
             Sort::sortByMin(new ShapesCollection([
-                $point_1,
+                $p1,
                 $point_7,
-                $point_0,
+                $p0,
                 $point_5,
                 $point_m10,
             ]))->all()
@@ -150,17 +150,17 @@ final class GeometryTest extends AbstractTestCase
 
     public function testSortByMinAndLength(): void
     {
-        $point_0 = new Point(0);
-        $point_1 = new Point(1);
+        $p0 = new Point(0);
+        $p1 = new Point(1);
         $point_5 = new Point(5);
 
-        $segment_0_1 = new Segment($point_0, $point_1);
-        $segment_1_0 = new Segment($point_1, $point_0);
+        $segment_0_1 = new Segment($p0, $p1);
+        $segment_1_0 = new Segment($p1, $p0);
 
-        $segment_0_5 = new Segment($point_0, $point_5);
+        $segment_0_5 = new Segment($p0, $point_5);
 
-        $vector_0_p        = new Vector($point_0, true);
-        $vector_0_p_second = new Vector($point_0, true);
+        $vector_0_p        = new Vector($p0, true);
+        $vector_0_p_second = new Vector($p0, true);
 
         // same segments
 

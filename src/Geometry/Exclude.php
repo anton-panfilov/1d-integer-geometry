@@ -2,24 +2,141 @@
 
 namespace AP\Geometry\Int1D\Geometry;
 
-use AP\Geometry\Int1D\Shape\ShapesCollection;
+use AP\Geometry\Int1D\Exception\NoIntersectsException;
+use AP\Geometry\Int1D\Shape\AbstractShape;
 use AP\Geometry\Int1D\Shape\Point;
 use AP\Geometry\Int1D\Shape\Segment;
+use AP\Geometry\Int1D\Shape\ShapesCollection;
 use AP\Geometry\Int1D\Shape\Vector;
-use AP\Geometry\Int1D\Exception\NoIntersectsException;
+use RuntimeException;
 
 class Exclude
 {
     /**
+     * @throws NoIntersectsException
+     */
+    public static function exclude(
+        AbstractShape|ShapesCollection $exclude,
+        AbstractShape|ShapesCollection $original,
+    ): ShapesCollection
+    {
+        // temp solution
+        if ($exclude instanceof AbstractShape && $original instanceof AbstractShape) {
+            return self::excludeShapeFromShape(
+                exclude: $exclude,
+                original: $original
+            );
+        }
+
+        return self::excludeCollectionFromCollection(
+            excludeCollection: new ShapesCollection($exclude),
+            originalCollection: new ShapesCollection($exclude),
+        );
+    }
+
+    protected static function excludeCollectionFromCollection(
+        ShapesCollection $excludeCollection,
+        ShapesCollection $originalCollection,
+    ): ShapesCollection
+    {
+        throw new RuntimeException("no implemented");
+    }
+
+    /**
+     * @throws NoIntersectsException
+     */
+    protected static function excludeShapeFromShape(
+        AbstractShape $exclude,
+        AbstractShape $original,
+    ): ShapesCollection
+    {
+        if ($exclude instanceof Point) {
+            if ($original instanceof Point) return self::excludePointFromPoint($exclude, $original);
+            if ($original instanceof Segment) return self::excludePointFromSegment($exclude, $original);
+            if ($original instanceof Vector) return self::excludePointFromVector($exclude, $original);
+        }
+        if ($exclude instanceof Segment) {
+            if ($original instanceof Point) return self::excludeSegmentFromPoint($exclude, $original);
+            if ($original instanceof Segment) return self::excludeSegmentFromSegment($exclude, $original);
+            if ($original instanceof Vector) return self::excludeSegmentFromVector($exclude, $original);
+        }
+        if ($exclude instanceof Vector) {
+            if ($original instanceof Point) return self::excludeVectorFromPoint($exclude, $original);
+            if ($original instanceof Segment) return self::excludeVectorFromSegment($exclude, $original);
+            if ($original instanceof Vector) return self::excludeVectorFromVector($exclude, $original);
+        }
+        throw new RuntimeException(
+            "undefined exclude methods for excluded: " . get_debug_type($exclude) .
+            ", original: " . get_debug_type($original)
+        );
+    }
+
+    /**
+     * @throws NoIntersectsException
+     */
+    protected static function excludeShapeFromPoint(
+        AbstractShape $excludeShape,
+        Point         $originalPoint
+    ): ShapesCollection
+    {
+        if (!Intersects::intersectsShapes($excludeShape, $originalPoint)) {
+            throw new NoIntersectsException();
+        }
+        return new ShapesCollection();
+    }
+
+    /**
+     * @throws NoIntersectsException
+     */
+    protected static function excludePointFromPoint(
+        Point $excludePoint,
+        Point $originalPoint
+    ): ShapesCollection
+    {
+        return self::excludeShapeFromPoint(
+            excludeShape: $excludePoint,
+            originalPoint: $originalPoint
+        );
+    }
+
+    /**
+     * @throws NoIntersectsException
+     */
+    protected static function excludeSegmentFromPoint(
+        Segment $excludeSegment,
+        Point   $originalPoint
+    ): ShapesCollection
+    {
+        return self::excludeShapeFromPoint(
+            excludeShape: $excludeSegment,
+            originalPoint: $originalPoint
+        );
+    }
+
+    /**
+     * @throws NoIntersectsException
+     */
+    protected static function excludeVectorFromPoint(
+        Vector $excludeVector,
+        Point  $originalPoint
+    ): ShapesCollection
+    {
+        return self::excludeShapeFromPoint(
+            excludeShape: $excludeVector,
+            originalPoint: $originalPoint
+        );
+    }
+
+    /**
      * @return ShapesCollection [Segment | Point]{0,2}
      * @throws NoIntersectsException
      */
-    public static function excludePointFromSegment(
+    protected static function excludePointFromSegment(
         Point   $excludePoint,
         Segment $originalSegment
     ): ShapesCollection
     {
-        if (!Intersects::intersectsPointAndSegment($excludePoint, $originalSegment)) {
+        if (!Intersects::intersectsShapes($excludePoint, $originalSegment)) {
             throw new NoIntersectsException();
         }
 
@@ -63,12 +180,12 @@ class Exclude
      * @return ShapesCollection [Vector] or [Point, Vector] or [Segment, Vector]
      * @throws NoIntersectsException
      */
-    public static function excludePointFromVector(
+    protected static function excludePointFromVector(
         Point  $excludePoint,
         Vector $originalVector
     ): ShapesCollection
     {
-        if (!Intersects::intersectsPointAndVector($excludePoint, $originalVector)) {
+        if (!Intersects::intersectsShapes($excludePoint, $originalVector)) {
             throw new NoIntersectsException();
         }
 
@@ -86,10 +203,10 @@ class Exclude
         return new ShapesCollection([
             (new Segment(
                 point1: clone $originalVector->point,
-                point2: (new $excludePoint->value - $correction),
+                point2: new Point($excludePoint->value - $correction),
             ))->normalize(),
             (new Vector(
-                point: (new $excludePoint->value + $correction),
+                point: new Point($excludePoint->value + $correction),
                 directionTowardsPositiveInfinity: $originalVector->directionTowardsPositiveInfinity
             ))
         ]);
@@ -99,20 +216,20 @@ class Exclude
      * @return ShapesCollection [Segment | Point]{0,2}
      * @throws NoIntersectsException
      */
-    public static function excludeSegmentFromSegment(
+    protected static function excludeSegmentFromSegment(
         Segment $excludeSegment,
         Segment $originalSegment
     ): ShapesCollection
     {
-        if (!Intersects::intersectsSegments($excludeSegment, $originalSegment)) {
+        if (!Intersects::intersectsShapes($excludeSegment, $originalSegment)) {
             throw new NoIntersectsException();
         }
 
-        $excludeSegmentMin = $originalSegment->min()->value;
-        $excludeSegmentMax = $originalSegment->max()->value;
+        $originalSegmentMin = $originalSegment->min()->value;
+        $originalSegmentMax = $originalSegment->max()->value;
 
-        $originalSegmentMin = $excludeSegment->min()->value;
-        $originalSegmentMax = $excludeSegment->max()->value;
+        $excludeSegmentMin = $excludeSegment->min()->value;
+        $excludeSegmentMax = $excludeSegment->max()->value;
 
         if ($excludeSegmentMin <= $originalSegmentMin && $excludeSegmentMax >= $originalSegmentMax) {
             // full intersects
@@ -141,12 +258,12 @@ class Exclude
     /**
      * @throws NoIntersectsException
      */
-    public static function excludeSegmentFromVector(
+    protected static function excludeSegmentFromVector(
         Segment $excludeSegment,
         Vector  $originalVector
     ): ShapesCollection
     {
-        if (!Intersects::intersectsSegmentAndVector($excludeSegment, $originalVector)) {
+        if (!Intersects::intersectsShapes($excludeSegment, $originalVector)) {
             throw new NoIntersectsException();
         }
 
@@ -186,29 +303,29 @@ class Exclude
      * @return ShapesCollection [Segment | Point]{0, 1}
      * @throws NoIntersectsException
      */
-    public static function excludeVectorFromSegment(
+    protected static function excludeVectorFromSegment(
         Vector  $excludeVector,
         Segment $originalSegment,
     ): ShapesCollection
     {
-        if (!Intersects::intersectsSegmentAndVector($originalSegment, $excludeVector)) {
+        if (!Intersects::intersectsShapes($originalSegment, $excludeVector)) {
             throw new NoIntersectsException();
         }
 
         $segmentMin = $originalSegment->min()->value;
-        $segmentMax = $originalSegment->min()->value;
+        $segmentMax = $originalSegment->max()->value;
 
-        if(
+        if (
             ($excludeVector->directionTowardsPositiveInfinity && $excludeVector->point->value <= $segmentMin)
             || (!$excludeVector->directionTowardsPositiveInfinity && $excludeVector->point->value >= $segmentMax)
-        ){
+        ) {
             // full intersects
             return new ShapesCollection([]);
         }
 
         $result = new ShapesCollection([]);
 
-        if($excludeVector->directionTowardsPositiveInfinity){
+        if ($excludeVector->directionTowardsPositiveInfinity) {
             $result[] = (new Segment(
                 point1: new Point(value: $segmentMin),
                 point2: new Point(value: $excludeVector->point->value - 1),
@@ -227,12 +344,12 @@ class Exclude
      * @return ShapesCollection [Vector | Segment | Point]{0, 1}
      * @throws NoIntersectsException
      */
-    public static function excludeVectorFromVector(
+    protected static function excludeVectorFromVector(
         Vector $excludeVector,
         Vector $originalVector
     ): ShapesCollection
     {
-        if (!Intersects::intersectsVectors($originalVector, $excludeVector)) {
+        if (!Intersects::intersectsShapes($originalVector, $excludeVector)) {
             throw new NoIntersectsException();
         }
 
@@ -259,7 +376,7 @@ class Exclude
         } else {
             $result[] = (new Vector(
                 point: new Point(value: $originalVector->directionTowardsPositiveInfinity ?
-                    $excludeVector->point->value + 1:
+                    $excludeVector->point->value + 1 :
                     $excludeVector->point->value - 1
                 ),
                 directionTowardsPositiveInfinity: $originalVector->directionTowardsPositiveInfinity,

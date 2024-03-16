@@ -1,35 +1,71 @@
-# 1D Integer Geometry Library Documentation
+# 1D Integer Geometry Library
 
-Welcome to the 1D Geometry Library, a comprehensive PHP library designed for handling 1D geometric shapes like points, segments, and vectors. This library offers functionality to manipulate these shapes, determine intersections, and perform sorting operations based on various criteria.
+The 1D Integer Geometry Library, `anton-panfilov/1d-integer-geometry`, provides a comprehensive set of tools for performing geometric operations on 1-dimensional integer shapes. This includes functionality for determining intersections, exclusions, and sorting of geometric shapes such as points, segments, and vectors. The library is designed to be intuitive and easy to use, catering to a wide range of applications in computational geometry, computer graphics, and related fields.
 
-## Features
+## Key Features
 
-- **Exclusion Operations**: Perform exclusion operations between points, segments, and vectors, and analyze the resulting shapes.
-- **Intersection Detection**: Determine whether various 1D geometric shapes intersect with each other.
-- **Sorting Capabilities**: Sort collections of geometric shapes based on minimum values, lengths, and other criteria.
+- **Exclusion**: Compute the geometric difference between shapes, effectively excluding one shape from another.
+- **Intersection**: Determine whether two shapes intersect and calculate the intersection points.
+- **Shapes**: Create and manipulate basic 1D geometric shapes, including points, segments, and vectors.
+- **Sorting**: Sort collections of geometric shapes based on their positions.
 
-## Getting Started
+## Installation
 
-To get started with the 1D Geometry Library, ensure you have PHP installed and your environment is set up to run PHP scripts. Clone this repository to your local machine and include the necessary files in your PHP project.
+The library can be installed using Composer, a dependency manager for PHP. To add the 1D Integer Geometry Library to your project, run the following command in your project's root directory:
 
-## Documentation
+```bash
+composer require anton-panfilov/1d-integer-geometry
+```
 
-Detailed documentation is available for each major component of the library:
+## Usage
 
-- [Exclusion Operations](docs/Exclude.md): Learn how to use the `Exclude` class to perform exclusion operations between geometric shapes.
-- [Intersection Detection](docs/Intersects.md): Understand the capabilities of the `Intersects` class for determining intersections between shapes.
-- [Sorting Capabilities](docs/Sort.md): Explore the `Sort` class to sort geometric shapes based on various criteria.
+### Excluding Shapes
 
-## Examples
+```php
+$result = Exclude::exclude(
+    Shape::s(-9, 5),
+    Shape::s(-10, 10)
+);
+```
 
-For practical examples and usage, refer to the individual documentation files linked above. Each file includes examples demonstrating how to use the library's features.
+### Intersecting Shapes
+
+```php
+$result = Intersects::intersectsShapes(
+    Shape::p(10),
+    Shape::s(5, 34)
+);
+// true
+
+$result = Intersects::intersectsShapes(
+    Shape::vp(10),
+    Shape::s(5, 7)
+);
+// false
+```
+
+### Creating Shapes
+
+```php
+$point = Shape::p(10);
+$segment = Shape::s(-9, 5);
+```
+
+### Sorting Shapes
+
+Refer to the `Sort.md` documentation for detailed examples and usage.
+
+For more detailed documentation on each feature, refer to the respective files in the `docs` directory:
+
+- [Exclude](docs/Exclude.md)
+- [Intersects](docs/Intersects.md)
+- [Shapes](docs/Shapes.md)
+- [Sort](docs/Sort.md)
 
 ## Contributing
 
-We welcome contributions to the 1D Geometry Library! If you have suggestions for improvements or new features, feel free to create an issue or submit a pull request.
+Contributions to the 1D Integer Geometry Library are welcome. Please refer to the contributing guidelines for more information.
 
 ## License
 
-This library is open-sourced software licensed under the [MIT license](LICENSE).
-
-Thank you for exploring the 1D Geometry Library. We hope it serves your needs well in handling 1D geometric operations!
+This library is released under the MIT License. See the LICENSE file for details.

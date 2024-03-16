@@ -8,9 +8,12 @@ use AP\Structure\Collection\ObjectsCollection;
 class ShapesCollection extends ObjectsCollection
 {
     public function __construct(
-        array|AbstractCollection $data = []
+        array|AbstractShape|AbstractCollection $data = []
     )
     {
+        if ($data instanceof AbstractShape) {
+            $data = [$data];
+        }
         parent::__construct(
             class: AbstractShape::class,
             data: $data

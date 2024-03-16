@@ -2,7 +2,7 @@
   "name": "anton-panfilov/1d-integer-geometry",
   "type": "library",
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "authors": [
     {
       "name": "Anton Panfilov"
@@ -16,7 +16,10 @@
   "autoload-dev": {
     "psr-4": {
       "AP\\Geometry\\Int1D\\Tests\\": "tests/"
-    }
+    },
+    "files": [
+      "tests/shapes.php"
+    ]
   },
   "require": {
     "php": "^8.1",
