@@ -7,9 +7,7 @@ use AP\Structure\Collection\ObjectsCollection;
 
 class SortElementsCollection extends ObjectsCollection
 {
-    public function __construct(
-        array|AbstractCollection $data = []
-    )
+    public function __construct(array|AbstractCollection $data = [])
     {
         parent::__construct(
             class: SortElement::class,
