@@ -5,6 +5,7 @@ namespace AP\Geometry\Int1D\Tests\Geometry;
 use AP\Geometry\Int1D\Geometry\Intersects;
 use AP\Geometry\Int1D\Shape\AbstractShape;
 use AP\Geometry\Int1D\Tests\AbstractTestCase;
+use function AP\Geometry\Int1D\Tests\Helpers\all;
 use function AP\Geometry\Int1D\Tests\Helpers\p;
 use function AP\Geometry\Int1D\Tests\Helpers\s;
 use function AP\Geometry\Int1D\Tests\Helpers\vn;
@@ -20,6 +21,20 @@ final class IntersectsTest extends AbstractTestCase
     protected static function assertIntersectsFalse(AbstractShape $shape1, AbstractShape $shape2): void
     {
         self::assertFalse(Intersects::intersectsShapes(shape1: $shape1, shape2: $shape2));
+    }
+
+    public function testIntersectsAll(): void
+    {
+        self::assertIntersectsTrue(shape1: all(), shape2: p(1));
+        self::assertIntersectsTrue(shape1: all(), shape2: s(1, 10));
+        self::assertIntersectsTrue(shape1: all(), shape2: s(10, 1));
+        self::assertIntersectsTrue(shape1: all(), shape2: vn(10));
+        self::assertIntersectsTrue(shape1: all(), shape2: vn(-10));
+        self::assertIntersectsTrue(shape1: all(), shape2: vn(0));
+        self::assertIntersectsTrue(shape1: all(), shape2: vp(1));
+        self::assertIntersectsTrue(shape1: all(), shape2: vp(-1));
+        self::assertIntersectsTrue(shape1: all(), shape2: vp(0));
+        self::assertIntersectsTrue(shape1: all(), shape2: all());
     }
 
     public function testIntersectsPoints(): void

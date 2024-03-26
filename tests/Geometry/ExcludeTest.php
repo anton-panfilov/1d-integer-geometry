@@ -6,6 +6,7 @@ use AP\Geometry\Int1D\Geometry\Exclude;
 use AP\Geometry\Int1D\Shape\AbstractShape;
 use AP\Geometry\Int1D\Shape\ShapesCollection;
 use AP\Geometry\Int1D\Tests\AbstractTestCase;
+use function AP\Geometry\Int1D\Tests\Helpers\all;
 use function AP\Geometry\Int1D\Tests\Helpers\p;
 use function AP\Geometry\Int1D\Tests\Helpers\s;
 use function AP\Geometry\Int1D\Tests\Helpers\vn;
@@ -70,6 +71,11 @@ final class ExcludeTest extends AbstractTestCase
         self::assertExcludeTest(original: p(0), exclude: vn(100), expected: []);
     }
 
+    public function testExcludeAllFromPoint(): void
+    {
+        self::assertExcludeTest(original: p(0), exclude: all(), expected: []);
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // FROM SEGMENT
 
@@ -127,6 +133,12 @@ final class ExcludeTest extends AbstractTestCase
         self::assertExcludeTest(original: s(3, 5), exclude: vn(3), expected: s(4, 5));
     }
 
+    public function testExcludeAllFromSegment(): void
+    {
+        self::assertExcludeTest(original: s(3, 5), exclude: all(), expected: []);
+        self::assertExcludeTest(original: s(5, 3), exclude: all(), expected: []);
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // FROM VECTOR
 
@@ -177,5 +189,41 @@ final class ExcludeTest extends AbstractTestCase
         self::assertExcludeTest(original: vp(3), exclude: vp(4), expected: p(3));
         self::assertExcludeTest(original: vp(3), exclude: vp(5), expected: s(3, 4));
         self::assertExcludeTest(original: vn(3), exclude: vn(4), expected: []);
+    }
+
+    public function testExcludeAllFromVector(): void
+    {
+        self::assertExcludeTest(original: vn(3), exclude: all(), expected: []);
+        self::assertExcludeTest(original: vp(5), exclude: all(), expected: []);
+        self::assertExcludeTest(original: vn(0), exclude: all(), expected: []);
+        self::assertExcludeTest(original: vp(0), exclude: all(), expected: []);
+        self::assertExcludeTest(original: vn(-2), exclude: all(), expected: []);
+        self::assertExcludeTest(original: vp(-100), exclude: all(), expected: []);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // FROM ALL
+
+    public function testExcludePointFromAll(): void
+    {
+        self::assertExcludeTest(original: all(), exclude: p(7), expected: [vn(6), vp(8)]);
+    }
+
+    public function testExcludeSegmentFromAll(): void
+    {
+        self::assertExcludeTest(original: all(), exclude: s(-10, 10), expected: [vn(-11), vp(11)]);
+        self::assertExcludeTest(original: all(), exclude: s(10, -10), expected: [vn(-11), vp(11)]);
+        self::assertExcludeTest(original: all(), exclude: s(5, 5), expected: [vn(4), vp(6)]);
+    }
+
+    public function testExcludeVectorFromAll(): void
+    {
+        self::assertExcludeTest(original: all(), exclude: vp(7), expected: vn(6));
+        self::assertExcludeTest(original: all(), exclude: vn(7), expected: vp(8));
+    }
+
+    public function testExcludeAllFromAll(): void
+    {
+        self::assertExcludeTest(original: all(), exclude: all(), expected: []);
     }
 }

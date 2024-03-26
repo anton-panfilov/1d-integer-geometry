@@ -3,7 +3,9 @@
 namespace AP\Geometry\Int1D\Geometry;
 
 use AP\Geometry\Int1D\Exception\NoIntersectsException;
+use AP\Geometry\Int1D\Helpers\Shape;
 use AP\Geometry\Int1D\Shape\AbstractShape;
+use AP\Geometry\Int1D\Shape\All;
 use AP\Geometry\Int1D\Shape\Point;
 use AP\Geometry\Int1D\Shape\Segment;
 use AP\Geometry\Int1D\Shape\ShapesCollection;
@@ -54,16 +56,22 @@ class Exclude
             if ($original instanceof Point) return self::excludePointFromPoint($exclude, $original);
             if ($original instanceof Segment) return self::excludePointFromSegment($exclude, $original);
             if ($original instanceof Vector) return self::excludePointFromVector($exclude, $original);
+            if ($original instanceof All) return self::excludePointFromAll($exclude);
         }
         if ($exclude instanceof Segment) {
             if ($original instanceof Point) return self::excludeSegmentFromPoint($exclude, $original);
             if ($original instanceof Segment) return self::excludeSegmentFromSegment($exclude, $original);
             if ($original instanceof Vector) return self::excludeSegmentFromVector($exclude, $original);
+            if ($original instanceof All) return self::excludeSegmentFromAll($exclude);
         }
         if ($exclude instanceof Vector) {
             if ($original instanceof Point) return self::excludeVectorFromPoint($exclude, $original);
             if ($original instanceof Segment) return self::excludeVectorFromSegment($exclude, $original);
             if ($original instanceof Vector) return self::excludeVectorFromVector($exclude, $original);
+            if ($original instanceof All) return self::excludeVectorFromAll($exclude);
+        }
+        if ($exclude instanceof All) {
+            return Shape::col();
         }
         throw new RuntimeException(
             "undefined exclude methods for excluded: " . get_debug_type($exclude) .
@@ -210,6 +218,35 @@ class Exclude
                 directionTowardsPositiveInfinity: $originalVector->directionTowardsPositiveInfinity
             ))
         ]);
+    }
+
+    protected static function excludePointFromAll(Point $excludePoint)
+    {
+        return Shape::col([
+            Shape::vn($excludePoint->value - 1),
+            Shape::vp($excludePoint->value + 1),
+        ]);
+    }
+
+    protected static function excludeSegmentFromAll(Segment $excludeSegment)
+    {
+        return Shape::col([
+            Shape::vn($excludeSegment->min()->value - 1),
+            Shape::vp($excludeSegment->max()->value + 1),
+        ]);
+    }
+
+    protected static function excludeVectorFromAll(Vector $excludeVector)
+    {
+        if ($excludeVector->directionTowardsPositiveInfinity) {
+            return Shape::col([
+                Shape::vn($excludeVector->point->value - 1),
+            ]);
+        } else {
+            return Shape::col([
+                Shape::vp($excludeVector->point->value + 1),
+            ]);
+        }
     }
 
     /**

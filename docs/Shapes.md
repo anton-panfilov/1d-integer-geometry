@@ -56,6 +56,20 @@ $vectorNeg = new Vector(new Point(5), directionTowardsPositiveInfinity: false);
 $vectorNeg = Shape::vn(5);
 ```
 
+## All
+
+A `All` represents any points from  Negative Infinity to Positive Infinity 
+
+```php
+use AP\Geometry\Int1D\Shape\All;
+
+// Direct instantiation
+$all = new All();
+
+// Using a helper method
+$segment = Shape::all();
+```
+
 ## ShapesCollection
 
 A `ShapesCollection` is a collection that can contain multiple shapes, including points, segments, and vectors.

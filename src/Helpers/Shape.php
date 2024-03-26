@@ -3,6 +3,7 @@
 namespace AP\Geometry\Int1D\Helpers;
 
 use AP\Geometry\Int1D\Shape\AbstractShape;
+use AP\Geometry\Int1D\Shape\All;
 use AP\Geometry\Int1D\Shape\Point;
 use AP\Geometry\Int1D\Shape\Segment;
 use AP\Geometry\Int1D\Shape\ShapesCollection;
@@ -36,8 +37,27 @@ class Shape
         return self::v($p, false);
     }
 
+    static public function all(): All
+    {
+        return new All();
+    }
+
     static public function col(array|AbstractShape|AbstractCollection $data = []): ShapesCollection
     {
         return new ShapesCollection($data);
+    }
+
+    static public function make(?int $min, ?int $max): AbstractShape
+    {
+        if (is_int($min) && is_int($max)) {
+            return self::s($min, $max)->normalize();
+        }
+        if (is_int($min)) {
+            return self::vp($min);
+        }
+        if (is_int($max)) {
+            return self::vn($max);
+        }
+        return self::all();
     }
 }

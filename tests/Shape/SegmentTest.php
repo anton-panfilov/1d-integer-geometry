@@ -2,9 +2,11 @@
 
 namespace AP\Geometry\Int1D\Tests\Shape;
 
+use AP\Geometry\Int1D\Helpers\Shape;
 use AP\Geometry\Int1D\Shape\Point;
 use AP\Geometry\Int1D\Shape\Segment;
 use AP\Geometry\Int1D\Tests\AbstractTestCase;
+use function AP\Geometry\Int1D\Tests\Helpers\make;
 
 final class SegmentTest extends AbstractTestCase
 {
@@ -47,5 +49,15 @@ final class SegmentTest extends AbstractTestCase
 
         // res include link to old segments with changed links to points
         $this->assertTrue($res instanceof Point);
+    }
+
+    public function testMake(): void
+    {
+        $this->assertEquals(Shape::all(), make(null, null));
+        $this->assertEquals(Shape::vp(1), make(1, null));
+        $this->assertEquals(Shape::vn(1), make(null, 1));
+        $this->assertEquals(Shape::p(1), make(1, 1)->normalize());
+        $this->assertEquals(Shape::s(1, 10), make(1, 10)->normalize());
+        $this->assertEquals(Shape::s(1, 10), make(10, 1)->normalize());
     }
 }

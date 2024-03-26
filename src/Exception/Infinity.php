@@ -2,8 +2,8 @@
 
 namespace AP\Geometry\Int1D\Exception;
 
-use Exception;
+use RuntimeException;
 
-class Infinity extends Exception
+class Infinity extends RuntimeException
 {
 }

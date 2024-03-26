@@ -3,6 +3,8 @@
 namespace AP\Geometry\Int1D\Tests\Helpers;
 
 use AP\Geometry\Int1D\Helpers\Shape;
+use AP\Geometry\Int1D\Shape\AbstractShape;
+use AP\Geometry\Int1D\Shape\All;
 use AP\Geometry\Int1D\Shape\Point;
 use AP\Geometry\Int1D\Shape\Segment;
 use AP\Geometry\Int1D\Shape\Vector;
@@ -30,4 +32,14 @@ function vp(int $p): Vector
 function vn(int $p): Vector
 {
     return Shape::vn(p: $p);
+}
+
+function all(): All
+{
+    return Shape::all();
+}
+
+function make(?int $min, ?int $max): AbstractShape
+{
+    return Shape::make(min: $min, max: $max);
 }

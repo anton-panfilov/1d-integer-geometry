@@ -2,9 +2,9 @@
 
 namespace AP\Geometry\Int1D\Exception;
 
-use Exception;
+use RuntimeException;
 
-class NoIntersectsException extends Exception
+class NoIntersectsException extends RuntimeException
 {
 
 }

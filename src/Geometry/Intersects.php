@@ -3,6 +3,7 @@
 namespace AP\Geometry\Int1D\Geometry;
 
 use AP\Geometry\Int1D\Shape\AbstractShape;
+use AP\Geometry\Int1D\Shape\All;
 use AP\Geometry\Int1D\Shape\Point;
 use AP\Geometry\Int1D\Shape\Segment;
 use AP\Geometry\Int1D\Shape\Vector;
@@ -16,16 +17,22 @@ class Intersects
             if ($shape2 instanceof Point) return self::intersectsPoints(point1: $shape1, point2: $shape2);
             if ($shape2 instanceof Segment) return self::intersectsPointAndSegment(point: $shape1, segment: $shape2);
             if ($shape2 instanceof Vector) return self::intersectsPointAndVector(point: $shape1, vector: $shape2);
+            if ($shape2 instanceof All) return true;
         }
         if ($shape1 instanceof Segment) {
             if ($shape2 instanceof Point) return self::intersectsPointAndSegment(point: $shape2, segment: $shape1);
             if ($shape2 instanceof Segment) return self::intersectsSegments(segment1: $shape1, segment2: $shape2);
             if ($shape2 instanceof Vector) return self::intersectsSegmentAndVector(segment: $shape1, vector: $shape2);
+            if ($shape2 instanceof All) return true;
         }
         if ($shape1 instanceof Vector) {
             if ($shape2 instanceof Point) return self::intersectsPointAndVector(point: $shape2, vector: $shape1);
             if ($shape2 instanceof Segment) return self::intersectsSegmentAndVector(segment: $shape2, vector: $shape1);
             if ($shape2 instanceof Vector) return self::intersectsVectors(vector1: $shape1, vector2: $shape2);
+            if ($shape2 instanceof All) return true;
+        }
+        if ($shape1 instanceof All) {
+            return true;
         }
         throw new RuntimeException(
             "undefined intersects methods shape1: " . get_debug_type($shape1) .
