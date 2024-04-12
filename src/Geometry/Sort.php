@@ -5,9 +5,9 @@ namespace AP\Geometry\Int1D\Geometry;
 use AP\Geometry\Int1D\Shape\ShapesCollection;
 use AP\Geometry\Int1D\Shape\AbstractShape;
 use AP\Geometry\Int1D\Exception\Infinity;
-use AP\Geometry\Int1D\Sort\Sort as SortLib;
-use AP\Geometry\Int1D\Sort\SortElement;
-use AP\Geometry\Int1D\Sort\SortElementsCollection;
+use AP\Structure\Sort\Sort as SortLib;
+use AP\Structure\Sort\SortElementsCollection;
+use AP\Structure\Sort\SortElement;
 use UnexpectedValueException;
 
 class Sort
