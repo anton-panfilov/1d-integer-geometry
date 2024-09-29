@@ -2,6 +2,7 @@
 
 namespace AP\Geometry\Int1D\Geometry;
 
+use AP\Geometry\Int1D\Exception\NoIntersectsException;
 use AP\Geometry\Int1D\Shape\AbstractShape;
 use AP\Geometry\Int1D\Shape\All;
 use AP\Geometry\Int1D\Shape\Point;
@@ -34,11 +35,49 @@ class Intersects
         if ($shape1 instanceof All) {
             return true;
         }
+
+        $shape1_str = get_debug_type($shape1);
+        $shape2_str = get_debug_type($shape2);
         throw new RuntimeException(
-            "undefined intersects methods shape1: " . get_debug_type($shape1) .
-            ", shape2: " . get_debug_type($shape2)
+            "internal error: 'intersectsShapes' no implemented for shapes: {$shape1_str}, {$shape2_str}"
         );
     }
+
+    /**
+     * @throws NoIntersectsException
+     */
+    public static function getIntersectsShape(AbstractShape $shape1, AbstractShape $shape2): AbstractShape
+    {
+        if ($shape1 instanceof Point) {
+            if ($shape2 instanceof Point) return self::getIntersectsPoints(point1: $shape1, point2: $shape2);
+            if ($shape2 instanceof Segment) return self::getIntersectsPointAndSegment(point: $shape1, segment: $shape2);
+            if ($shape2 instanceof Vector) return self::getIntersectsPointAndVector(point: $shape1, vector: $shape2);
+            if ($shape2 instanceof All) return $shape1->normalize();
+        }
+        if ($shape1 instanceof Segment) {
+            if ($shape2 instanceof Point) return self::getIntersectsPointAndSegment(point: $shape2, segment: $shape1);
+            if ($shape2 instanceof Segment) return self::getIntersectsSegments(segment1: $shape1, segment2: $shape2);
+            if ($shape2 instanceof Vector) return self::getIntersectsSegmentAndVector(segment: $shape1, vector: $shape2);
+            if ($shape2 instanceof All) return $shape1->normalize();
+        }
+        if ($shape1 instanceof Vector) {
+            if ($shape2 instanceof Point) return self::getIntersectsPointAndVector(point: $shape2, vector: $shape1);
+            if ($shape2 instanceof Segment) return self::getIntersectsSegmentAndVector(segment: $shape2, vector: $shape1);
+            if ($shape2 instanceof Vector) return self::getIntersectsVectors(vector1: $shape1, vector2: $shape2);
+            if ($shape2 instanceof All) return $shape1->normalize();
+        }
+        if ($shape1 instanceof All) {
+            return $shape2->normalize();
+        }
+
+        $shape1_str = get_debug_type($shape1);
+        $shape2_str = get_debug_type($shape2);
+        throw new RuntimeException(
+            "internal error: 'getIntersectsShape' no implemented for shapes: {$shape1_str}, {$shape2_str}"
+        );
+    }
+
+    //////////////////////////////////////////
 
     protected static function intersectsPoints(Point $point1, Point $point2): bool
     {
@@ -78,4 +117,82 @@ class Intersects
             $vector1->point->value <= $vector2->point->value :
             $vector2->point->value <= $vector1->point->value;
     }
+
+    //////////////////////////////////////////
+
+    protected static function getIntersectsPoints(Point $point1, Point $point2): AbstractShape
+    {
+        if (self::intersectsPoints($point1, $point2)) {
+            return new Point(value: $point1->value);
+        }
+        throw new NoIntersectsException();
+    }
+
+    protected static function getIntersectsPointAndSegment(Point $point, Segment $segment): AbstractShape
+    {
+        if (self::intersectsPointAndSegment($point, $segment)) {
+            return new Point(value: $point->value);
+        }
+        throw new NoIntersectsException();
+    }
+
+    protected static function getIntersectsPointAndVector(Point $point, Vector $vector): AbstractShape
+    {
+        if (self::intersectsPointAndVector($point, $vector)) {
+            return new Point(value: $point->value);
+        }
+        throw new NoIntersectsException();
+    }
+
+    protected static function getIntersectsSegments(Segment $segment1, Segment $segment2): AbstractShape
+    {
+        if (self::intersectsSegments($segment1, $segment2)) {
+            return (new Segment(
+                point1: new Point(max($segment1->min()->value, $segment2->min()->value)),
+                point2: new Point(min($segment1->max()->value, $segment2->max()->value)),
+            ))->normalize();
+        }
+        throw new NoIntersectsException();
+    }
+
+    protected static function getIntersectsSegmentAndVector(Segment $segment, Vector $vector): AbstractShape
+    {
+        if (self::intersectsSegmentAndVector($segment, $vector)) {
+            if ($vector->directionTowardsPositiveInfinity) {
+                return (new Segment(
+                    point1: new Point(max($vector->point->value, $segment->min()->value)),
+                    point2: $segment->max()
+                ))->normalize();
+            } else {
+                return (new Segment(
+                    point1: $segment->min(),
+                    point2: new Point(min($vector->point->value, $segment->max()->value)),
+                ))->normalize();
+            }
+        }
+        throw new NoIntersectsException();
+    }
+
+    protected static function getIntersectsVectors(Vector $vector1, Vector $vector2): AbstractShape
+    {
+        if (self::intersectsVectors($vector1, $vector2)) {
+            if ($vector1->directionTowardsPositiveInfinity == $vector2->directionTowardsPositiveInfinity) {
+                return new Vector(
+                    point: new Point(
+                        value: $vector1->directionTowardsPositiveInfinity ?
+                            max($vector1->point->value, $vector2->point->value) :
+                            min($vector1->point->value, $vector2->point->value)
+                    ),
+                    directionTowardsPositiveInfinity: $vector1->directionTowardsPositiveInfinity
+                );
+            } else {
+                return (new Segment(
+                    point1: $vector1->point,
+                    point2: $vector2->point,
+                ))->normalize();
+            }
+        }
+        throw new NoIntersectsException();
+    }
+
 }

@@ -5,7 +5,7 @@ The 1D Integer Geometry Library, `anton-panfilov/1d-integer-geometry`, provides 
 ## Key Features
 
 - **Exclusion**: Compute the geometric difference between shapes, effectively excluding one shape from another.
-- **Intersection**: Determine whether two shapes intersect and calculate the intersection points.
+- **Intersection**: Determine whether two shapes intersect and obtaining the shape obtained at the intersection.
 - **Shapes**: Create and manipulate basic 1D geometric shapes, including points, segments, and vectors.
 - **Sorting**: Sort collections of geometric shapes based on their positions.
 
@@ -19,7 +19,7 @@ composer require anton-panfilov/1d-integer-geometry
 
 ## Usage
 
-### Excluding Shapes
+### Excluding shapes
 
 ```php
 $result = Exclude::exclude(
@@ -28,7 +28,24 @@ $result = Exclude::exclude(
 );
 ```
 
-### Intersecting Shapes
+### Get the shape obtained by intersection
+
+```php
+$result = Intersects::getIntersectsShape(
+    Shape::s(0, 10),
+    Shape::s(5, 15)
+);
+// Shape::s(5, 10)
+
+$result = Intersects::getIntersectsShape(
+    Shape::s(0, 10),
+    Shape::s(10, 15)
+);
+// Shape::p(10)
+
+```
+
+### Check if the figures intersect
 
 ```php
 $result = Intersects::intersectsShapes(
