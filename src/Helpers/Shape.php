@@ -60,4 +60,22 @@ class Shape
         }
         return self::all();
     }
+
+    /**
+     * To get segment from Point or Segment or CanNotBeSegment exception
+     * @param AbstractShape $shape
+     * @return Segment
+     * @throws CanNotBeSegment
+     */
+    static public function segment_strict(AbstractShape $shape): Segment
+    {
+        $new = clone $shape;
+        $new->normalize();
+        if ($new instanceof Point) {
+            return self::s($new->value, $new->value);
+        } elseif ($new instanceof Segment) {
+            return $new;
+        }
+        throw new CanNotBeSegment();
+    }
 }

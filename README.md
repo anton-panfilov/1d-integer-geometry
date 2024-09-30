@@ -7,7 +7,6 @@ The 1D Integer Geometry Library, `anton-panfilov/1d-integer-geometry`, provides 
 - **Exclusion**: Compute the geometric difference between shapes, effectively excluding one shape from another.
 - **Intersection**: Determine whether two shapes intersect and obtaining the shape obtained at the intersection.
 - **Shapes**: Create and manipulate basic 1D geometric shapes, including points, segments, and vectors.
-- **Sorting**: Sort collections of geometric shapes based on their positions.
 
 ## Installation
 
@@ -66,18 +65,16 @@ $result = Intersects::intersectsShapes(
 ```php
 $point = Shape::p(10);
 $segment = Shape::s(-9, 5);
+
+// Convert Point or Segment to Segment (with point1 <= point2)
+$segment = Shape::segment_strict(Shape::p(5)); // expected: Shape::s(5, 5)
 ```
-
-### Sorting Shapes
-
-Refer to the `Sort.md` documentation for detailed examples and usage.
 
 For more detailed documentation on each feature, refer to the respective files in the `docs` directory:
 
 - [Exclude](docs/Exclude.md)
 - [Intersects](docs/Intersects.md)
 - [Shapes](docs/Shapes.md)
-- [Sort](docs/Sort.md)
 
 ## Contributing
 

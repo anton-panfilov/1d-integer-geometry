@@ -2,6 +2,7 @@
 
 namespace AP\Geometry\Int1D\Tests\Shape;
 
+use AP\Geometry\Int1D\Helpers\CanNotBeSegment;
 use AP\Geometry\Int1D\Helpers\Shape;
 use AP\Geometry\Int1D\Shape\Point;
 use AP\Geometry\Int1D\Shape\Segment;
@@ -59,5 +60,31 @@ final class SegmentTest extends AbstractTestCase
         $this->assertEquals(Shape::p(1), make(1, 1)->normalize());
         $this->assertEquals(Shape::s(1, 10), make(1, 10)->normalize());
         $this->assertEquals(Shape::s(1, 10), make(10, 1)->normalize());
+    }
+
+    public function testSegmentStrict(): void
+    {
+        $this->assertException(CanNotBeSegment::class, function () {
+            Shape::segment_strict(shape: Shape::vp(1));
+        });
+
+        $this->assertException(CanNotBeSegment::class, function () {
+            Shape::segment_strict(shape: Shape::vn(1));
+        });
+
+        $this->assertException(CanNotBeSegment::class, function () {
+            Shape::segment_strict(shape: Shape::all());
+        });
+
+        $this->assertEquals(Shape::s(1, 10), Shape::segment_strict(shape: Shape::s(1, 10)));
+        $this->assertEquals(Shape::s(1, 10), Shape::segment_strict(shape: Shape::s(10, 1)));
+        $this->assertEquals(Shape::s(10, 10), Shape::segment_strict(shape: Shape::p(10)));
+
+        // normilize and deep copy
+        $original_shape = Shape::s(10, 1);
+        $new_shape      = Shape::segment_strict($original_shape);
+
+        $this->assertEquals(Shape::s(10, 1), $original_shape);
+        $this->assertEquals(Shape::s(1, 10), $new_shape);
     }
 }
